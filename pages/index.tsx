@@ -1,9 +1,31 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import type { NextPage } from "next"
+import Head from "next/head"
+import Image from "next/image"
+import styles from "../styles/Home.module.css"
+import { GetStaticProps, GetStaticPaths, GetServerSideProps } from "next"
 
-const Home: NextPage = () => {
+interface Dog {
+  Name?: string
+  Age?: string | number
+}
+interface HomeProperty {
+  str1?: string
+  str2?: string
+  dogList: Dog[]
+}
+
+const Home: NextPage<HomeProperty> = ({ str1, str2, dogList }) => {
+  // console.log(str1)
+  // console.log(str2)
+  // console.log(dogList)
+
+  const Good = () => {
+    for (let i = 0; i < dogList?.length; i++) {
+      <h2>{dogList[i]}</h2>
+      console.log(dogList[i])
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -12,13 +34,19 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
+      {Good()}
+
+      {/* {dogList?.forEach(function (value) {
+        <h2>{value.Age}</h2>
+      })} */}
+
+      {/* <main className={styles.main}>
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
 
         <p className={styles.description}>
-          Get started by editing{' '}
+          Get started by editing{" "}
           <code className={styles.code}>pages/index.tsx</code>
         </p>
 
@@ -51,7 +79,7 @@ const Home: NextPage = () => {
             </p>
           </a>
         </div>
-      </main>
+      </main> */}
 
       <footer className={styles.footer}>
         <a
@@ -59,7 +87,7 @@ const Home: NextPage = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <span className={styles.logo}>
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
@@ -67,6 +95,40 @@ const Home: NextPage = () => {
       </footer>
     </div>
   )
+}
+
+// Home.getInitialProps = async ({}) => {
+//   const res = await fetch("http://localhost:3000/")
+//   const dogs = await res.json()
+//   const str1 = "good"
+//   const str2 = "bad"
+//   //return multiple parameter
+//   return { str1, str2, dogs }
+// }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const response = await fetch("http://localhost:3000/")
+  const dogs = await response.json()
+
+  let index: number = 0
+  let dogList: Dog[] = [];
+  //loop for firebase [{},{},{}] list
+  while (dogs[index] != null) {
+    dogList.push(dogs[index])
+    console.log(dogList[index])
+    index++
+  }
+
+  const str1 = "good"
+  const str2 = "bad"
+  //return multiple parameter
+  return {
+    props: {
+      dogList,
+      str1,
+      str2,
+    },
+  }
 }
 
 export default Home
